@@ -1,0 +1,8 @@
+# Firebase secret
+backend/*.json
+*.json
+
+# Python
+venv/
+__pycache__/
+*.pyc
