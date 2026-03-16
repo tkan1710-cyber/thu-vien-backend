@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trả sách</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Quản Lý Thư Viện</h1>
+    <nav>
+        <a href="index.html">Trang chủ</a>
+        <a href="books.html">Quản lý sách</a>
+        <a href="borrowings.html">Lịch sử mượn</a>
+        <a href="returns.html">Trả sách</a>
+    </nav>
+</header>
+
+<main>
+    <h2>↩️ Trả sách</h2>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Sách</th>
+                <th>Người mượn</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="returnList">
+            <tr>
+                <td colspan="3">Đang tải dữ liệu...</td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+<script>
+const API_BASE = "https://YOUR-BACKEND.onrender.com";
+
+function loadReturns() {
+    fetch(`${API_BASE}/api/borrowings`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById("returnList");
+            tbody.innerHTML = "";
+
+            const borrowing = data.filter(b => b.status === "borrowing");
+
+            if (borrowing.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='3'>Không có sách cần trả</td></tr>";
+                return;
+            }
+
+            borrowing.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${b.book_title}</td>
+                        <td>${b.borrower}</td>
+                        <td>
+                            <button onclick="returnBook('${b.id}')">
+                                Trả sách
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+function returnBook(id) {
+    if (!confirm("Bạn chắc chắn muốn trả sách này?")) return;
+
+    fetch(`${API_BASE}/api/return/${id}`, { method: "POST" })
+        .then(res => res.json())
+        .then(() => {
+            alert("✅ Trả sách thành công!");
+            loadReturns();
+        })
+        .catch(() => alert(" Lỗi trả sách"));
+}
+
+loadReturns();
+</script>
+
+</body>
+</html>

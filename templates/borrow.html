@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Mượn sách</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1> Quản Lý Thư Viện</h1>
+    <nav>
+        <a href="index.html">Trang chủ</a>
+        <a href="books.html">Quản lý sách</a>
+        <a href="borrowings.html">Lịch sử mượn</a>
+    </nav>
+</header>
+
+<main>
+    <h2>📖 Mượn sách</h2>
+
+    <div id="bookInfo">Đang tải thông tin sách...</div>
+
+    <form id="borrowForm" style="display:none;">
+        <label>Tên người mượn:</label><br>
+        <input type="text" id="borrower" required><br><br>
+
+        <button type="submit">Xác nhận mượn</button>
+        <a href="books.html">Hủy</a>
+    </form>
+</main>
+
+<script>
+const API_BASE = "https://YOUR-BACKEND.onrender.com";
+const params = new URLSearchParams(window.location.search);
+const bookId = params.get("id");
+
+if (!bookId) {
+    document.getElementById("bookInfo").innerHTML = "❌ Không có sách được chọn";
+}
+
+// 1 LẤY THÔNG TIN SÁCH
+fetch(`${API_BASE}/api/books/${bookId}`)
+    .then(res => res.json())
+    .then(book => {
+        if (book.quantity <= 0) {
+            document.getElementById("bookInfo").innerHTML =
+                "❌ Sách đã hết";
+            return;
+        }
+
+        document.getElementById("bookInfo").innerHTML = `
+            <p><strong>Tên sách:</strong> ${book.title}</p>
+            <p><strong>Tác giả:</strong> ${book.author}</p>
+            <p><strong>Còn lại:</strong> ${book.quantity}</p>
+        `;
+
+        document.getElementById("borrowForm").style.display = "block";
+    });
+
+// 2 XỬ LÝ MƯỢN SÁCH
+document.getElementById("borrowForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const borrower = document.getElementById("borrower").value;
+
+    fetch(`${API_BASE}/api/borrow/${bookId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ borrower })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(" Mượn sách thành công!");
+        window.location.href = "books.html";
+    })
+    .catch(err => {
+        alert(" Lỗi mượn sách");
+        console.error(err);
+    });
+});
+</script>
+
+</body>
+</html>

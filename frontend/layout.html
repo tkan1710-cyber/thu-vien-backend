@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Thư Viện</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <h1> Hệ Thống Quản Lý Thư Viện</h1>
+        <nav>
+            <a href="/">Trang chủ</a>
+            <a href="/books">Quản lý sách</a>
+            <a href="/users">người mượn sách</a>
+            <a href="/borrowings">Lịch sử mượn</a>
+            <a href="/returns">Trả sách</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html> 

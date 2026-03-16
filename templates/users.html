@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Người mượn sách</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1> Quản Lý Thư Viện</h1>
+    <nav>
+        <a href="index.html">Trang chủ</a>
+        <a href="books.html">Sách</a>
+        <a href="borrowings.html">Lịch sử mượn</a>
+        <a href="users.html">Người mượn</a>
+    </nav>
+</header>
+
+<main>
+    <h2>👤 Danh sách người mượn sách</h2>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Tên người mượn</th>
+                <th>Sách đã mượn</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody id="usersTable">
+            <tr>
+                <td colspan="3">Đang tải dữ liệu...</td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+<script>
+const API_URL = "https://YOUR-BACKEND.onrender.com/api/borrowings";
+
+fetch(API_URL)
+    .then(res => res.json())
+    .then(data => {
+        const table = document.getElementById("usersTable");
+        table.innerHTML = "";
+
+        if (data.length === 0) {
+            table.innerHTML = "<tr><td colspan='3'>Chưa có dữ liệu</td></tr>";
+            return;
+        }
+
+        data.forEach(b => {
+            table.innerHTML += `
+                <tr>
+                    <td>${b.borrower}</td>
+                    <td>${b.book_title}</td>
+                    <td>${b.status}</td>
+                </tr>
+            `;
+        });
+    })
+    .catch(err => {
+        document.getElementById("usersTable").innerHTML =
+            "<tr><td colspan='3'>Không tải được dữ liệu</td></tr>";
+        console.error(err);
+    });
+</script>
+
+</body>
+</html>

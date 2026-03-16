@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Mượn sách</h2>
+
+<p><strong>Sách:</strong> {{ book.title }}</p>
+<p><strong>Tác giả:</strong> {{ book.author }}</p>
+<p><strong>Còn lại:</strong> {{ book.quantity }}</p>
+
+<form method="post">
+    <label>Tên người mượn:</label><br>
+    <input type="text" name="borrower" required><br><br>
+
+    <button type="submit">Xác nhận mượn</button>
+    <a href="/books">quay lại</a>
+</form>
+
+{% endblock %}

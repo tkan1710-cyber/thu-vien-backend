@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Lịch sử mượn sách</h2>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tên sách</th>
+        <th>Người mượn</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+    </tr>
+
+    {% for b in borrows %}
+    <tr>
+        <td>{{ b.book_title }}</td>
+        <td>{{ b.borrower }}</td>
+        <td>{{ b.status }}</td>
+        <td>
+            {% if b.status == "borrowing" %}
+                <a href="/return/{{ b.id }}"
+                   onclick="return confirm('xác nhận trả sách')">
+                   Trả sách
+                </a>
+            {% else %}
+                Đã trả
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

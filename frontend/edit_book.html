@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Sửa sách</h2>
+
+<form method="post">
+    <label>Tên sách:</label><br>
+    <input type="text" name="title" value="{{ book.title }}" required><br><br>
+
+    <label>Tác giả:</label><br>
+    <input type="text" name="author" value="{{ book.author }}" required><br><br>
+
+    <label>Số lượng:</label><br>
+    <input type="number" name="quantity" value="{{ book.quantity }}" min="1" required><br><br>
+
+    <button type="submit">Lưu thay đổi</button>
+    <a href="/books">Hủy</a>
+</form>
+
+{% endblock %}
+

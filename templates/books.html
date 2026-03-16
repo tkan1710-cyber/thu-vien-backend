@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Quản lý sách</h2>
+
+<form method="post">
+    <label>Tên sách:</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>Tác giả:</label><br>
+    <input type="text" name="author" required><br><br>
+
+    <label>Số lượng:</label><br>
+    <input type="number" name="quantity" min="1" required><br><br>
+
+    <button type="submit">Thêm sách</button>
+</form>
+
+<hr>
+
+<h3>Danh sách sách đã thêm</h3>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tên sách</th>
+        <th>Tác giả</th>
+        <th>Số lượng</th>
+        <th>Hành động</th>
+    </tr>
+
+    {% for book in books %}
+    <tr>
+    <td>{{ book.title }}</td>
+    <td>{{ book.author }}</td>
+    <td>{{ book.quantity }}</td>
+    <td>
+        <a href="/borrow/{{ book.id }}"> Mượn</a> |
+        <a href="/edit/{{ book.id }}"> Sửa</a> |
+        <a href="/delete/{{ book.id }}"
+           onclick="return confirm('Bạn có chắc muốn xóa sách này không?')">
+           Xóa
+        </a>
+    </td>
+</tr>
+
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử mượn sách</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Quản Lý Thư Viện</h1>
+    <nav>
+        <a href="index.html">Trang chủ</a>
+        <a href="books.html">Quản lý sách</a>
+        <a href="borrowings.html">Lịch sử mượn</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Lịch sử mượn sách</h2>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Sách</th>
+                <th>Người mượn</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="borrowList">
+            <tr>
+                <td colspan="4">Đang tải dữ liệu...</td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+<script>
+const API_BASE = "https://YOUR-BACKEND.onrender.com";
+
+function loadBorrowings() {
+    fetch(`${API_BASE}/api/borrowings`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById("borrowList");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4'>Chưa có lượt mượn</td></tr>";
+                return;
+            }
+
+            data.forEach(b => {
+                const tr = document.createElement("tr");
+
+                tr.innerHTML = `
+                    <td>${b.book_title}</td>
+                    <td>${b.borrower}</td>
+                    <td>${b.status === "borrowing" ? "Đang mượn" : "Đã trả"}</td>
+                    <td>
+                        ${b.status === "borrowing"
+                            ? `<button onclick="returnBook('${b.id}')">Trả sách</button>`
+                            : "-"
+                        }
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+function returnBook(id) {
+    if (!confirm("Bạn chắc chắn muốn trả sách?")) return;
+
+    fetch(`${API_BASE}/api/return/${id}`, { method: "POST" })
+        .then(res => res.json())
+        .then(() => {
+            alert(" Trả sách thành công!");
+            loadBorrowings();
+        });
+}
+
+loadBorrowings();
+</script>
+
+</body>
+</html>
