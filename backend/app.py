@@ -8,6 +8,10 @@ from firebase_admin import credentials, firestore
 app = Flask(__name__)
 CORS(app)  # cho phép frontend gọi API
 
+@app.route("/")
+def home():
+    return "Backend API Thu Vien đang chạy!" 
+    
 # Firebase
 import os
 import json
