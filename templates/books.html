@@ -1,49 +1,134 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý sách</title>
+</head>
+<body>
 
-{% block content %}
 <h2>Quản lý sách</h2>
 
-<form method="post">
-    <label>Tên sách:</label><br>
-    <input type="text" name="title" required><br><br>
+<!-- FORM THÊM SÁCH -->
+<h3>Thêm sách</h3>
 
-    <label>Tác giả:</label><br>
-    <input type="text" name="author" required><br><br>
+<input id="title" placeholder="Tên sách"><br><br>
+<input id="author" placeholder="Tác giả"><br><br>
+<input id="quantity" type="number" placeholder="Số lượng"><br><br>
 
-    <label>Số lượng:</label><br>
-    <input type="number" name="quantity" min="1" required><br><br>
-
-    <button type="submit">Thêm sách</button>
-</form>
+<button onclick="addBook()">Thêm sách</button>
 
 <hr>
 
-<h3>Danh sách sách đã thêm</h3>
+<!-- DANH SÁCH SÁCH -->
+<h3>Danh sách sách</h3>
 
 <table border="1" cellpadding="8">
-    <tr>
-        <th>Tên sách</th>
-        <th>Tác giả</th>
-        <th>Số lượng</th>
-        <th>Hành động</th>
-    </tr>
-
-    {% for book in books %}
-    <tr>
-    <td>{{ book.title }}</td>
-    <td>{{ book.author }}</td>
-    <td>{{ book.quantity }}</td>
-    <td>
-        <a href="/borrow/{{ book.id }}"> Mượn</a> |
-        <a href="/edit/{{ book.id }}"> Sửa</a> |
-        <a href="/delete/{{ book.id }}"
-           onclick="return confirm('Bạn có chắc muốn xóa sách này không?')">
-           Xóa
-        </a>
-    </td>
-</tr>
-
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Tên sách</th>
+            <th>Tác giả</th>
+            <th>Số lượng</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody id="book-table"></tbody>
 </table>
 
-{% endblock %}
+<script>
+const API = "https://thu-vien-backend.onrender.com/api/books";
+
+// LOAD DANH SÁCH
+function loadBooks() {
+    fetch(API)
+        .then(res => res.json())
+        .then(data => {
+            const table = document.getElementById("book-table");
+            table.innerHTML = "";
+
+            data.forEach(book => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.quantity}</td>
+                    <td>
+                        <button onclick="borrowBook('${book.id}')">Mượn</button>
+                        <button onclick="editBook('${book.id}', '${book.title}', '${book.author}', ${book.quantity})">Sửa</button>
+                        <button onclick="deleteBook('${book.id}')">Xóa</button>
+                    </td>
+                `;
+
+                table.appendChild(row);
+            });
+        });
+}
+
+// THÊM SÁCH
+function addBook() {
+    fetch(API, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: document.getElementById("title").value,
+            author: document.getElementById("author").value,
+            quantity: document.getElementById("quantity").value
+        })
+    }).then(() => loadBooks());
+}
+
+// XÓA
+function deleteBook(id) {
+    if (!confirm("Bạn có chắc muốn xóa?")) return;
+
+    fetch(`${API}/${id}`, {
+        method: "DELETE"
+    }).then(() => loadBooks());
+}
+
+// SỬA
+function editBook(id, title, author, quantity) {
+    const newTitle = prompt("Tên mới:", title);
+    const newAuthor = prompt("Tác giả mới:", author);
+    const newQuantity = prompt("Số lượng:", quantity);
+
+    fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: newTitle,
+            author: newAuthor,
+            quantity: newQuantity
+        })
+    }).then(() => loadBooks());
+}
+
+// MƯỢN
+function borrowBook(id) {
+    const borrower = prompt("Tên người mượn:");
+
+    fetch(`https://thu-vien-backend.onrender.com/api/borrow/${id}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            borrower: borrower
+        })
+    }).then(res => res.json())
+      .then(data => {
+          alert(data.message || data.error);
+          loadBooks();
+      });
+}
+
+// LOAD KHI MỞ TRANG
+loadBooks();
+</script>
+
+</body>
+</html>

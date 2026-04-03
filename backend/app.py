@@ -10,7 +10,7 @@ CORS(app)  # cho phép frontend gọi API
 
 @app.route("/")
 def home():
-    return "Backend API Thu Vien đang chạy!" 
+    return "Backend da run" 
     
 # Firebase
 import os
